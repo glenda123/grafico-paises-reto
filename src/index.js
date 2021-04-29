@@ -1,12 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import {ApolloProvider} from '@apollo/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+
+  export const client = new ApolloClient({
+  uri: 'https://countries.trevorblades.com/',
+  cache: new InMemoryCache()
+
+});
+
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

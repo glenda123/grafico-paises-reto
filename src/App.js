@@ -1,25 +1,102 @@
-import logo from './logo.svg';
+import React from 'react';
+import graphql2chartjs from 'graphql2chartjs';
+import {Bar} from 'react-chartjs-2';
+import { useQuery } from '@apollo/client';
+import gql from 'graphql-tag'
+import {client} from './index';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+function App () {
+
+  const data = {
+    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    datasets: [
+      {
+        label: '# of countries',
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+  
+  const options = {
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+  };
+  
+  const VerticalBar = () => (
+    <div>
+      <div className='header'>
+        <h1 className='title'>Vertical Bar Chart</h1>
+        
+      </div>
+      <Bar data={data} options={options} />
     </div>
   );
+  
+  
+
+  const LIST_CONTINENTS = gql`
+  {
+    query{
+      continents{
+        label:name
+        countries{
+          data:count
+        }
+    
+      }
+
+      }
+  }
+`
+  
+  const {datas, loading, error} = useQuery(LIST_CONTINENTS, {client});
+  
+  if (datas) {
+    const g2c = new graphql2chartjs(datas, 'bar');
+    return <Bar data={g2c.datas}/>
+  }
+  if (loading || error) {
+    return <p>{error ? error.message : 'Loading...'}</p>;
+  }
+
+  return(
+    <VerticalBar/>
+  )
+
+  
+  
+    
+
 }
+
+ 
+  
+  
+  
 
 export default App;
